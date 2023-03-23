@@ -1,0 +1,62 @@
+name: Format
+
+on:
+  workflow_dispatch:
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install dependencies 🔧
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+   
+      - uses: psf/black@22.3.0
+        with:
+          options: "--check --color --verbose"
+          src: "./packages/vaex-api"
+
+  sort:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Install dependencies 🔧
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+     
+      - uses: isort/isort-action@master
+        with:
+          configuration: "--profile black --filter-files"
+
+  lint:
+    name: "flake8"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout 🛎️
+        uses: "actions/checkout@v2"
+
+      - name: Setup Python 🔧
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install Dependencies 🔧
+        run: |
+          python -VV
+          python -m site
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install flake8
+          python -m pip install flake8-github-actions flake8-docstrings
+
+      - name: "Run Flake8"
+        run: "flake8 --format github"
