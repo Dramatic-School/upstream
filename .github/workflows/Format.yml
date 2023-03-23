@@ -19,7 +19,7 @@ jobs:
       - uses: psf/black@22.3.0
         with:
           options: "--check --color --verbose"
-          src: "./packages/vaex-api"
+          #src: "./packages/vaex-api"
 
   sort:
     runs-on: ubuntu-latest
