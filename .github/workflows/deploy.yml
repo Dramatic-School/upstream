@@ -19,4 +19,4 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
       - name: Echo
-        run: "Just an echo"
+        run: echo "Just an echo"
