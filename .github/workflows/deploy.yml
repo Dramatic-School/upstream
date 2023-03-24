@@ -1,0 +1,17 @@
+name: Deploy all Services to Staging
+
+on:
+  release:
+    types:
+      - released
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  initialize:
+    if: ${{ startsWith(github.event.release.tag_name, 'Skiff-World-') || startsWith(github.event.inputs.tag, 'Skiff-World-') }}
+    runs-on: ubuntu-latest
