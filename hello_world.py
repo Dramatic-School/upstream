@@ -4,6 +4,6 @@ def another():
 def Hello():
   print("Hello World!")
   
-def another():
+def another1():
   print("Another")
 
