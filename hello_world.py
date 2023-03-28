@@ -7,3 +7,5 @@ def Hello():
 def another():
   print("Another")
 
+def another1():
+  print("Another")
