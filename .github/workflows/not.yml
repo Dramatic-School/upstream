@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: 3.8
    
-      - uses: psf/black@22.3.0
+      - uses: psf/black@stable
         with:
           options: "--check --color --verbose"
           #src: "./packages/vaex-api"
