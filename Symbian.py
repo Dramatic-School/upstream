@@ -1,1 +1,4 @@
-print("I am Symbian")
+def some():
+{
+    print("I am Symbian")
+}
