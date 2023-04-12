@@ -1,6 +1,16 @@
 name: Build
 
 on:
+  pull_request:
+     branches:
+       - 'main'
+       - 'release**'
+     types: 
+       - opened 
+       - reopened 
+       - synchronize
+       - edited
+       - ready_for_review
   push:
     paths:
       - 'gin/**'
