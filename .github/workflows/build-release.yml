@@ -51,7 +51,7 @@ jobs:
       # if: startsWith(github.ref, 'refs/tags/')
       id: tag
       env:
-        CUSTOM_TOKEN: ${{ secrets.CUSTOM_TOKEN }}
+        CUSTOM_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
       with:
         github-api-url: https://github.cppib.ca/api/v3
         github-graphql-url: https://github.cppib.ca/api
@@ -59,7 +59,7 @@ jobs:
         default-branch: "main"
         monorepo-tags: true
         # path: dist/
-        token: ${{ secrets.CUSTOM_TOKEN }} 
+        token: ${{ secrets.GIT_ACCESS_TOKEN }} 
         command: release-pr
         
   Release_Version:
