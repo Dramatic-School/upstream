@@ -1,0 +1,132 @@
+name: Build
+
+on:
+  push:
+    paths:
+      - 'gin/**'
+      - '.github/workflows/build-release.yaml'
+    branches:
+      - 'main'
+      - 'release**'
+    
+  workflow_dispatch:
+ 
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  Build_Version:
+    runs-on: ubuntu-latest
+    if: |
+     ( contains(github.event.head_commit.message, 'chore(main): release') == false )
+    steps:
+    - uses: actions/checkout@v3
+    - name: check trigger
+      run: |
+        echo '${{ toJSON( github.event)  }}'
+        echo '${{ github.event.pull_request.pull_request.title }}'
+        echo '${{ github.event.pull_request_review_thread.title }}'
+        echo '${{ github.event.head_commit.message }}'
+        echo ${{ contains(github.event.head_commit.message, 'chore(main): release') }}
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.20.2
+        cache: false
+
+    - name: Build
+      run: |
+        echo $PATH
+        #goreleaser build --clean --snapshot
+        mkdir dist
+        go build -o dist/gin gin/main.go
+        zip -r build.zip dist/*
+
+    - name: Unit Test
+      run: |
+        go test ./...
+        
+    - uses: google-github-actions/release-please-action@v3
+      # if: startsWith(github.ref, 'refs/tags/')
+      id: tag
+      env:
+        CUSTOM_TOKEN: ${{ secrets.CUSTOM_TOKEN }}
+      with:
+        github-api-url: https://github.cppib.ca/api/v3
+        github-graphql-url: https://github.cppib.ca/api
+        release-type: go
+        default-branch: "main"
+        monorepo-tags: true
+        # path: dist/
+        token: ${{ secrets.CUSTOM_TOKEN }} 
+        command: release-pr
+        
+  Release_Version:
+    runs-on: ubuntu-latest
+    if: |
+      (contains(github.event.head_commit.message, 'Merge pull request') == true) ||
+      (contains(github.event.head_commit.message, 'chore(main): release') == false) 
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - name: check directory
+      run: |
+        echo "${{ github.ref }}"
+        echo "${{ github.event.pull_request.merged }}"
+        echo "${{ github.event_name }}"
+        echo "${{ github.event.action }}"
+
+
+    - uses: google-github-actions/release-please-action@v3
+      id: release
+      env:
+        CUSTOM_TOKEN: ${{ secrets.CUSTOM_TOKEN }}
+      with:
+        github-api-url: https://github.cppib.ca/api/v3
+        github-graphql-url: https://github.cppib.ca/api
+        release-type: go
+        monorepo-tags: true
+        default-branch: "main"
+        token: ${{ secrets.CUSTOM_TOKEN }} 
+        command: github-release
+    
+
+  Deploy_Version:
+    runs-on: ubuntu-latest
+    needs: Release_Version
+    steps:
+    - name: Download Artifact Version
+      env:
+        SSH_KEY: "${{ secrets.SSH_KEY }}"
+      run: |
+        # git tag
+        echo this downloads an artifact
+        echo ${{ github.event.pull_request.merged }}
+
+    - name: "Deploy Version"
+      env:
+        SSH_KEY: "${{ secrets.SSH_KEY }}"
+      run: |
+        [[ ! -d ~/.ssh ]] && mkdir ~/.ssh
+        echo $SSH_KEY > ~/.ssh/server
+        ssh -i ~/.ssh/server -o StrictHostKeyChecking=no jolea@cppib.ca@10.97.51.204  "ls -l /tmp"
+        
+
+  DummyJob:
+    runs-on: [ standard ]
+    if: contains(github.event.pull_request.labels.*.name, 'autorelease')
+    steps:
+    - name: Dummy
+      run: |
+        echo ${{ github.event.pull_request.merged }}
+        echo ${{ toJSON( github.event.pull_request ) }}
+        echo '${{ github.event.pull_request.pull_request.title }}'
+        echo '${{ github.event.pull_request_review_thread.title }}'
+        echo '${{ github.event.head_commit.message }}'
+        echo ${{ contains(github.event.head_commit.message, 'chore(main): release') }} 
+        echo "${{ github.ref }}"
+        echo "${{ github.event.pull_request.merged }}"
+        echo "${{ github.event_name }}"
+        echo "${{ github.event.action }}"
