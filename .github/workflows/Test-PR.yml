@@ -1,0 +1,26 @@
+name: Test-PR
+on:
+  push:
+    branches:
+      - main
+      - main_test
+  
+  pull_request:
+    branches:
+      - main
+      - main_test
+      
+  workflow_dispatch:
+  
+jobs:
+  # Single deploy job since we're just deploying
+  CI-Run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Display current date 
+      run: echo "$(date +'%Y-%m-%d')"
+    - name: Some message 
+      run: echo "Some message!"
+  
