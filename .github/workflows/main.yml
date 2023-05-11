@@ -1,5 +1,4 @@
-
-name: main
+name: Called Reusable workflow2
 
 on: 
   push:
