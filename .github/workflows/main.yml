@@ -10,8 +10,8 @@ jobs:
     steps:
       - name: New version
         run: echo "This is version 5.1.2"
-      - name: New version
-        run: echo "This is version 5.1.1"
+      #- name: New version
+        #run: echo "This is version 5.1.1"
       - name: Show error message on foo.txt
         run: echo "::error file=foo.txt,line=1,col=1,endColumn=3::This is the foo.txt file."
       - name: Show error message on bar.txt
